@@ -1,0 +1,3 @@
+Another file with more text content.
+Testing the word count and frequency functions with this file as well.
+The frequency analysis should count the occurrences of Abhi.

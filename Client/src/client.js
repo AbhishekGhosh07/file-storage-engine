@@ -6,26 +6,24 @@ const { Command } = require('commander');
 const program = new Command();
 
 // Server URL
-const serverUrl = 'http://localhost:3000'; // Adjust to your server URL
+const serverUrl = 'http://localhost:3000'; 
 
-// Helper function to upload files
+// Add New Files
 async function uploadFiles(files) {
   const formData = new FormData();
   files.forEach((file) => {
     formData.append('files', fs.createReadStream(file));
   });
-
+  const headers = formData.getHeaders();
   try {
-    const response = await axios.post(`${serverUrl}/add`, formData, {
-      headers: formData.getHeaders(),
-    });
+    const response = await axios.post(`${serverUrl}/add`, formData, { headers });
     console.log(response.data);
   } catch (error) {
     console.error('Error uploading files:', error.response?.data || error.message);
   }
 }
 
-// Command: store add
+// command for adding new files
 program
   .command('add <files...>')
   .description('Add files to the store')
@@ -33,7 +31,7 @@ program
     uploadFiles(files);
   });
 
-// Command: store ls
+// Command for listing all the files
 program
   .command('ls')
   .description('List files in the store')
@@ -46,7 +44,7 @@ program
     }
   });
 
-// Command: store rm
+// command for removing the files
 program
   .command('rm <filename>')
   .description('Remove a file from the store')
@@ -59,19 +57,26 @@ program
     }
   });
 
-// Command: store update
+// command for updating the old files
 program
-  .command('update <filename>')
-  .description('Update a file in the store')
-  .action(async (filename) => {
-    const filePath = path.join(process.cwd(), filename);
+  .command('update <filename> <newfile>')
+  .description('Update a file in the store with a new file')
+  .action(async (filename, newfile) => {
+    const filePath = path.join(process.cwd(), filename);  
+    const newFilePath = path.join(process.cwd(), newfile); 
+
     if (!fs.existsSync(filePath)) {
       console.error(`File ${filename} not found in the current directory.`);
       return;
     }
 
+    if (!fs.existsSync(newFilePath)) {
+      console.error(`New file ${newfile} not found in the current directory.`);
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('file', fs.createReadStream(filePath));
+    formData.append('file', fs.createReadStream(newFilePath));
 
     try {
       const response = await axios.put(`${serverUrl}/update/${filename}`, formData, {
@@ -83,20 +88,20 @@ program
     }
   });
 
-// Command: store wc
+// command for getting the word counts
 program
   .command('wc')
   .description('Get word count of all files in the store')
   .action(async () => {
     try {
       const response = await axios.get(`${serverUrl}/wc`);
-      console.log(`Word Count: ${response.data}`);
+      console.log(`Word Count: ${JSON.stringify(response.data)}`);
     } catch (error) {
       console.error('Error getting word count:', error.response?.data || error.message);
     }
   });
 
-// Command: store freq-words
+// command for getting the top 10 word's frequency 
 program
   .command('freq-words')
   .description('Get frequent words in the store')
@@ -114,5 +119,4 @@ program
     }
   });
 
-// Parse and execute CLI commands
 program.parse(process.argv);
