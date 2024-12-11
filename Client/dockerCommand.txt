@@ -1,0 +1,6 @@
+sudo docker build . -t abhi3108/store-client     
+docker run  -v $HOME:/opt:ro file-storage-client-engine wc  
+
+
+sudo docker build -t file-storage-client-engine .   
+docker run -it --rm file-storage-client-engine add file1.txt file2.txt
