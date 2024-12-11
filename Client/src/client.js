@@ -1,3 +1,4 @@
+require('dotenv').config()
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
@@ -5,10 +6,7 @@ const FormData = require('form-data');
 const { Command } = require('commander');
 const program = new Command();
 
-// Server URL
-const serverUrl = 'http://localhost:3000'; 
-
-// Add New Files
+// Adding new files
 async function uploadFiles(files) {
   const formData = new FormData();
   files.forEach((file) => {
@@ -16,14 +14,13 @@ async function uploadFiles(files) {
   });
   const headers = formData.getHeaders();
   try {
-    const response = await axios.post(`${serverUrl}/add`, formData, { headers });
+    const response = await axios.post(`${process.env.SERVER_URL}/add`, formData, { headers });
     console.log(response.data);
   } catch (error) {
     console.error('Error uploading files:', error.response?.data || error.message);
   }
 }
-
-// command for adding new files
+// adding file command
 program
   .command('add <files...>')
   .description('Add files to the store')
@@ -31,33 +28,33 @@ program
     uploadFiles(files);
   });
 
-// Command for listing all the files
+// get files command
 program
   .command('ls')
   .description('List files in the store')
   .action(async () => {
     try {
-      const response = await axios.get(`${serverUrl}/ls`);
+      const response = await axios.get(`${process.env.SERVER_URL}/ls`);
       console.log('Files in store:', response.data.join(', '));
     } catch (error) {
       console.error('Error listing files:', error.response?.data || error.message);
     }
   });
 
-// command for removing the files
+// delete files command
 program
   .command('rm <filename>')
   .description('Remove a file from the store')
   .action(async (filename) => {
     try {
-      const response = await axios.delete(`${serverUrl}/rm/${filename}`);
+      const response = await axios.delete(`${process.env.SERVER_URL}/rm/${filename}`);
       console.log(response.data);
     } catch (error) {
       console.error('Error removing file:', error.response?.data || error.message);
     }
   });
 
-// command for updating the old files
+// update command
 program
   .command('update <filename> <newfile>')
   .description('Update a file in the store with a new file')
@@ -79,7 +76,7 @@ program
     formData.append('file', fs.createReadStream(newFilePath));
 
     try {
-      const response = await axios.put(`${serverUrl}/update/${filename}`, formData, {
+      const response = await axios.put(`${process.env.SERVER_URL}/update/${filename}`, formData, {
         headers: formData.getHeaders(),
       });
       console.log(response.data);
@@ -88,20 +85,20 @@ program
     }
   });
 
-// command for getting the word counts
+// word count command
 program
   .command('wc')
   .description('Get word count of all files in the store')
   .action(async () => {
     try {
-      const response = await axios.get(`${serverUrl}/wc`);
+      const response = await axios.get(`${process.env.SERVER_URL}/wc`);
       console.log(`Word Count: ${JSON.stringify(response.data)}`);
     } catch (error) {
       console.error('Error getting word count:', error.response?.data || error.message);
     }
   });
 
-// command for getting the top 10 word's frequency 
+// word freq command
 program
   .command('freq-words')
   .description('Get frequent words in the store')
@@ -110,7 +107,7 @@ program
   .action(async (options) => {
     try {
       const { limit, order } = options;
-      const response = await axios.get(`${serverUrl}/freq-words`, {
+      const response = await axios.get(`${process.env.SERVER_URL}/freq-words`, {
         params: { limit, order },
       });
       console.log(response.data);
