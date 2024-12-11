@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-
+const helper = require('../Utilities/helpers');
 // Define where the files will be permanently stored
 const FILE_STORE_PATH = path.join(__dirname, "data");
 
@@ -23,18 +23,21 @@ exports.addFile = (req, res) => {
     const tempFilePath = file.path;
     const destinationFilePath = path.join(FILE_STORE_PATH, file.originalname);
 
-    // Check if file already exists in destination
-    if (fs.existsSync(destinationFilePath)) {
-      errors.push(`File ${file.originalname} already exists.`);
+    // Calculate hash of the file
+    const fileHash = helper.getFileHash(tempFilePath);
+
+    // Check if a file with the same hash already exists
+    const existingFile = helper.getFileByHash(fileHash,FILE_STORE_PATH);
+
+    if (existingFile) {
+      // If file content is identical, store the new file with a different name
+      const newFilePath = path.join(FILE_STORE_PATH, `dup_${file.originalname}`);
+      fs.renameSync(tempFilePath, newFilePath);
+      successFiles.push(`File ${file.originalname} stored as duplicate.`);
     } else {
-      // Move the file from the temporary 'uploads' folder to the final storage folder
-      fs.rename(tempFilePath, destinationFilePath, (err) => {
-        if (err) {
-          errors.push(`Error moving file ${file.originalname}: ${err.message}`);
-        } else {
-          successFiles.push(file.originalname);
-        }
-      });
+      // If file content is not found, store it with its original name
+      fs.renameSync(tempFilePath, destinationFilePath);
+      successFiles.push(file.originalname);
     }
   });
 
@@ -45,6 +48,7 @@ exports.addFile = (req, res) => {
 
   res.send(`Files added successfully: ${successFiles.join(", ")}`);
 };
+
 
 exports.getFileList = (req, res) => {
   const files = fs.readdirSync(FILE_STORE_PATH);
@@ -63,26 +67,33 @@ exports.deleteFiles = (req, res) => {
   res.send("File removed successfully.");
 };
 
-exports.updateFile = (req, res) =>{
+exports.updateFile = (req, res) => {
   const { filename } = req.params;
-  const newFile = req.file;
+  const newFile = req.file;  // The file uploaded by the client
   const filePath = path.join(FILE_STORE_PATH, filename);
-  console.log(filePath);
+
+  console.log('Received file:', newFile.originalname);
+
   // Check if the file exists in the storage
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).send('File not found.');
+  if (fs.existsSync(filePath)) {
+    // Generate the hash of the uploaded file
+    const uploadedFileHash = helper.getFileHash(newFile.path);
+
+    // Check if a file with the same content already exists in the server
+    if (helper.fileExistsByHash(uploadedFileHash,FILE_STORE_PATH)) {
+      fs.unlinkSync(newFile.path);  // Delete the temporary uploaded file
+      return res.send('File with the same content already exists. Skipping upload.');
+    }
+
+    // If content is different, update the file by renaming it to the original filename
+    fs.renameSync(newFile.path, filePath);
+    return res.send('File updated successfully.');
   }
 
-  // If the new file is identical, don't upload it again
-  if (fs.existsSync(path.join(FILE_STORE_PATH, newFile.originalname))) {
-    fs.unlinkSync(newFile.path);  // Delete the temporary uploaded file
-    return res.send('File already exists with the same name.');
-  }
-
-  // Update the file by renaming it to the original filename
+  // If the file does not exist, upload it as a new file
   fs.renameSync(newFile.path, filePath);
-  res.send('File updated successfully.');
-}
+  res.send('File created and uploaded successfully.');
+};
 
 exports.getWordCount = (req, res) =>{
   const files = fs.readdirSync(FILE_STORE_PATH);
