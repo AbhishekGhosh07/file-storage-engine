@@ -10,7 +10,8 @@ const program = new Command();
 async function uploadFiles(files) {
   const formData = new FormData();
   files.forEach((file) => {
-    formData.append('files', fs.createReadStream(file));
+    console.log(file);
+    formData.append('files', fs.createReadStream(`${file}`));
   });
   const headers = formData.getHeaders();
   try {
