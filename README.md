@@ -59,6 +59,8 @@ store
 This will display a list of commands you can use to interact with the file storage server.
 
 Available Functionality
+![image](https://github.com/user-attachments/assets/67140d4e-9fa7-4628-8cd4-dad2eacab3f1)
+
 
 1. Add Files to the Server
 Use the add command to add files to the server. For example, to add file1.txt and file2.txt, use:
