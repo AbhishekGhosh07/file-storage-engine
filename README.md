@@ -35,13 +35,13 @@ npm install
 4. Build the Docker Image
 After the dependencies are installed, build the Docker image for the application using the following command:
 
-sudo docker build -t file-storage-server-engine .
-This will build a Docker image with the name file-storage-server-engine.
+sudo docker build -t 31081999/file-storage-client -f Dockerfile .
+This will build a Docker image with the name file-storage-client.
 
 5. Create an Alias for Running the Application
 To make it easier to run the Docker container with the correct settings, create an alias in your terminal:
 
-alias store='docker run -it --rm file-storage-server-engine'
+alias store='docker run -it --rm 31081999/file-storage-client'
 This alias allows you to run the application with the store command.
 
 Testing the Application
