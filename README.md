@@ -21,6 +21,26 @@ First, clone the project from the repository to your local machine:
 git clone <repository-url>
 Once cloned, navigate into the project directory, which will contain two subdirectories: client and server.
 
+Checkout the updated branches
+The main development branches for this project are:
+
+main: The primary and stable branch with the latest updates.
+feature/2.0: The branch for the current feature development.
+
+To ensure you're working with the most recent changes, you should check out these branches and pull the latest updates.
+
+To check out the main branch:
+
+git checkout main
+git pull origin main
+
+To check out the feature/2.0 branch:
+
+git checkout feature/2.0
+git pull origin feature/2.0
+
+By following these steps, you will have the latest updates from the main and feature/2.0 branches.
+
 2. Navigate to the client Folder
 Change directory to the client folder:
 
