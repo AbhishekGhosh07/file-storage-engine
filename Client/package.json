@@ -1,0 +1,23 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "store:ls": "node src/client.js ls",
+    "store:add": "node src/client.js add",
+    "store:rm": "node src/client.js rm",
+    "store:update": "node src/client.js update",
+    "store:wc": "node src/client.js wc",
+    "store:freq-words": "node src/client.js freq-words",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "form-data": "^4.0.1"
+  }
+}

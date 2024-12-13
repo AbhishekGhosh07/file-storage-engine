@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-storage-server-deployment
+  labels:
+    app: file-storage-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-storage-server
+  template:
+    metadata:
+      labels:
+        app: file-storage-server
+    spec:
+      containers:
+      - name: file-storage-server
+        image: 31081999/file-storage-server:1.0.0
+        ports:
+        - containerPort: 3000

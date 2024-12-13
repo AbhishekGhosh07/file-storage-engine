@@ -1,0 +1,12 @@
+sudo docker build . -t abhi3108/store-client     
+docker run  -v $HOME:/opt:ro file-storage-client-engine wc  
+
+
+sudo docker build -t file-storage-server-engine .   
+docker run -it --rm file-storage-server-engine
+
+
+sudo docker build -t 31081999/file-storage-client -f Dockerfile .
+docker run -it --rm 31081999/file-storage-client
+
+alias store='docker run -it --rm 31081999/file-storage-client'
