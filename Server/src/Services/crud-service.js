@@ -11,6 +11,7 @@ if (!fs.existsSync(FILE_STORE_PATH)) {
 
 console.log(FILE_STORE_PATH);
 
+// add file feature
 exports.addFile = (req, res) => {
   const files = req.files;
   if (!files || files.length === 0) {
@@ -52,11 +53,13 @@ exports.addFile = (req, res) => {
   res.send(`Files added successfully: ${successFiles.join(", ")}`);
 };
 
+// get file list feature
 exports.getFileList = (req, res) => {
   const files = fs.readdirSync(FILE_STORE_PATH);
   res.json(files);
 };
 
+// delete file feature
 exports.deleteFiles = (req, res) => {
   const { filename } = req.params;
   const filePath = path.join(FILE_STORE_PATH, filename);
@@ -69,6 +72,7 @@ exports.deleteFiles = (req, res) => {
   res.send("File removed successfully.");
 };
 
+// update feature
 exports.updateFile = (req, res) => {
   const { filename } = req.params;
   const newFile = req.file;
@@ -97,6 +101,7 @@ exports.updateFile = (req, res) => {
   res.send("File created and uploaded successfully.");
 };
 
+// word count feature
 exports.getWordCount = (req, res) => {
   const files = fs.readdirSync(FILE_STORE_PATH);
   let totalWordCount = 0;
@@ -109,6 +114,7 @@ exports.getWordCount = (req, res) => {
   res.json({ wordCount: totalWordCount });
 };
 
+// word frequency feature
 exports.getFrequency = async (req, res) => {
   const { limit = 10, order = "asc" } = req.query;
   const parsedLimit = parseInt(limit, 10);
